@@ -1,4 +1,5 @@
 from fastapi import Depends, FastAPI, HTTPException
+from fastapi.security import  HTTPBearer
 from sqlalchemy.orm import Session
 
 from . import models, schemas
@@ -6,6 +7,7 @@ from .services import user_service
 from .core.database import SessionLocal, engine
 
 models.Base.metadata.create_all(bind=engine)
+bearer = HTTPBearer()
 
 app = FastAPI()
 
@@ -37,6 +39,15 @@ def sign_in_user(sign_in_info: schemas.SignIn, db: Session = Depends(get_db)):
     
     return user_service.sign_in_user(db=db, sign_in_info=sign_in_info)
 
+
+@app.get("/get_inf_requests/", response_model=list[schemas.InferenceRequest])
+def get_inf_requests(token: str = Depends(bearer)):
+    pass
+
+
+@app.get("/get_inf_results/{request_id}", response_model=list[schemas.InferenceRequest])
+def get_inf_result(id: int, token: str = Depends(bearer)):
+    pass
 
 
 # @app.get("/users/", response_model=list[schemas.User])
