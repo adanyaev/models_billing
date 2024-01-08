@@ -33,6 +33,17 @@ class InferenceRequest(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
 
+    #SEQN, age_group, RIDAGEYR, RIAGENDR, PAQ605, BMXBMI, LBXGLU, DIQ010, LBXGLT, LBXIN
+
+    SEQN: Mapped[float] = mapped_column(Float)
+    RIAGENDR: Mapped[float] = mapped_column(Float)
+    PAQ605: Mapped[float] = mapped_column(Float)
+    BMXBMI: Mapped[float] = mapped_column(Float)
+    LBXGLU: Mapped[float] = mapped_column(Float)
+    DIQ010: Mapped[float] = mapped_column(Float)
+    LBXGLT: Mapped[float] = mapped_column(Float)
+    LBXIN: Mapped[float] = mapped_column(Float)
+
     status: Mapped[int] = mapped_column(Integer, default=0)
 
     cost: Mapped[int] = mapped_column(Integer, default=100)
@@ -55,7 +66,7 @@ class InferenceResult(Base):
 
     value: Mapped[float] = mapped_column(Float)
 
-    inference_request_id: Mapped[int]= mapped_column(Integer, ForeignKey("inference_requests.id"))
+    inference_request_id: Mapped[int] = mapped_column(Integer, ForeignKey("inference_requests.id"))
 
     inference_request: Mapped['InferenceRequest'] = relationship("InferenceRequest", back_populates="inference_result")
     

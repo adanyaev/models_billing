@@ -1,13 +1,13 @@
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.security import  HTTPBearer
 from sqlalchemy.orm import Session
-
+from models_billing.core import security
 from . import models, schemas
-from .services import user_service
+from .services import user_service, models_service
 from .core.database import SessionLocal, engine
 
-models.Base.metadata.create_all(bind=engine)
-bearer = HTTPBearer()
+
+bearer = security.JWTBearer()
 
 app = FastAPI()
 
@@ -40,14 +40,26 @@ def sign_in_user(sign_in_info: schemas.SignIn, db: Session = Depends(get_db)):
     return user_service.sign_in_user(db=db, sign_in_info=sign_in_info)
 
 
+@app.post("/infer_model/", response_model=schemas.InferenceRequest)
+def infer_model(inference_request: schemas.InferenceRequestCreate, token: str = Depends(bearer), db: Session = Depends(get_db)):
+    payload = security.decode_jwt(token)
+    user_id = payload.get('id')
+    return models_service.create_inf_request(db=db, user_id=user_id, inference_request_data=inference_request)
+
+
 @app.get("/get_inf_requests/", response_model=list[schemas.InferenceRequest])
-def get_inf_requests(token: str = Depends(bearer)):
-    pass
+def get_inf_requests(token: str = Depends(bearer), db: Session = Depends(get_db)):
+    payload = security.decode_jwt(token)
+    user_id = payload.get('id')
+    
+    return models_service.get_inf_requests(db, user_id)
 
 
 @app.get("/get_inf_results/{request_id}", response_model=list[schemas.InferenceRequest])
-def get_inf_result(id: int, token: str = Depends(bearer)):
-    pass
+def get_inf_result(request_id: int, token: str = Depends(bearer), db: Session = Depends(get_db)):
+    payload = security.decode_jwt(token)
+    user_id = payload.get('id')
+    return models_service.get_inf_result(db, user_id, request_id)
 
 
 # @app.get("/users/", response_model=list[schemas.User])
