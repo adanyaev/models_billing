@@ -2,16 +2,25 @@ from datetime import timedelta
 
 from sqlalchemy.orm import Session
 from sqlalchemy import select
+from redis import Redis
+from rq import Queue
 
-
+from models_billing.core.config import Configs
 from models_billing.core import exceptions
 from models_billing import schemas, models
-from models_billing.core.config import configs
 from models_billing.core.security import (
     create_access_token,
     get_password_hash,
     verify_password,
 )
+from models_billing.inference_queue.task import inference_model_task
+
+
+redis_conn = Redis(host='redis', port=Configs.REDIS_PORT)
+#redis_conn = Redis.from_url(Configs.REDIS_SERVER)
+
+# Создание объекта очереди
+queue = Queue(connection=redis_conn)
 
 def create_inf_request(db: Session, user_id: int, inference_request_data: schemas.InferenceRequestCreate):
 
@@ -24,6 +33,10 @@ def create_inf_request(db: Session, user_id: int, inference_request_data: schema
     db.add(inf_request)
     db.commit()
     db.refresh(inf_request)
+    
+    queue.enqueue(inference_model_task, kwargs={'model_id': model.id,
+                                                 'inf_request_id': inf_request.id,
+                                                 'data': list(request_fields.values())}) # TODO: check field names
     return inf_request
 
 
@@ -44,12 +57,5 @@ def get_inf_result(db: Session, user_id: int, request_id: int):
     )
     request = db.scalars(stmt).first()
     if request:
-        # stmt = (
-        #     select(models.InferenceResult)
-        #     .filter(
-        #         models.InferenceResult.inference_request_id == request.id
-        #     )
-        # )
-        # result = db.execute(stmt).first()
-        return request.inference_result.first()
-    return []
+        return request.inference_result # TODO: add check if exists
+    return None

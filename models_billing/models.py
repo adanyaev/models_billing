@@ -26,7 +26,7 @@ class MlModel(Base):
     price: Mapped[int] = mapped_column(Integer, default=100)
     description: Mapped[str] = mapped_column(String)
     inf_requests: Mapped[list["InferenceRequest"]] = relationship("InferenceRequest", back_populates="model")
-
+    weights_path: Mapped[str] = mapped_column(String, unique=True)
 
 class InferenceRequest(Base):
     __tablename__ = "inference_requests"
@@ -64,7 +64,7 @@ class InferenceResult(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
 
-    value: Mapped[float] = mapped_column(Float)
+    value: Mapped[str] = mapped_column(String)
 
     inference_request_id: Mapped[int] = mapped_column(Integer, ForeignKey("inference_requests.id"))
 

@@ -36,6 +36,11 @@ class Configs():
     # CORS
     BACKEND_CORS_ORIGINS: List[str] = ["*"]
 
+    # REDIS
+
+    REDIS_PORT: int = int(os.getenv("REDIS_PORT", '2313312'))
+    #REDIS_SERVER: str = os.getenv("REDIS_SERVER", '2313312')
+
     # database
     DB: str = os.getenv("DB", "sqlite")
     DB_USER: str = os.getenv("DB_USER")
@@ -53,7 +58,7 @@ class Configs():
            password=DB_PASSWORD,
            host=DB_HOST,
            port=DB_PORT,
-           database=ENV_DATABASE_MAPPER[ENV],
+           database='postgres',
         )
 
     else:

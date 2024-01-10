@@ -52,7 +52,7 @@ class InferenceRequest(InferenceRequestBase):
 class InferenceResult(BaseModel):
     id: int 
 
-    value: float
+    value: str
 
     #inference_request: [InferenceRequest]
 

@@ -55,7 +55,7 @@ def get_inf_requests(token: str = Depends(bearer), db: Session = Depends(get_db)
     return models_service.get_inf_requests(db, user_id)
 
 
-@app.get("/get_inf_results/{request_id}", response_model=list[schemas.InferenceRequest])
+@app.get("/get_inf_result/{request_id}", response_model=schemas.InferenceResult)
 def get_inf_result(request_id: int, token: str = Depends(bearer), db: Session = Depends(get_db)):
     payload = security.decode_jwt(token)
     user_id = payload.get('id')
