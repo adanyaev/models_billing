@@ -1,6 +1,4 @@
-
-from models_billing.core.database import SessionLocal, engine
-from models_billing import models, schemas
+from models_billing import models
 
 models_data = [{'name': 'LogisticRegression',
                 'price': 100,
@@ -16,15 +14,12 @@ models_data = [{'name': 'LogisticRegression',
                 'weights_path': "models_billing/inference_queue/models_weights/cb_model.pickle"},]
 
 
-models.Base.metadata.create_all(bind=engine)
-
-
-db = SessionLocal()
-
-model_objs = [models.MlModel(**m) for m in models_data]
-db.add_all(model_objs)
-db.commit()
-
-db.close()
-
-print('asdasd')
+def populate_db(engine, sessionmaker):
+    models.Base.metadata.create_all(bind=engine)
+    db = sessionmaker()
+    model_objs = [models.MlModel(**m) for m in models_data]
+    db.add_all(model_objs)
+    db.commit()
+    db.close()
+    print('asdasd')
+    

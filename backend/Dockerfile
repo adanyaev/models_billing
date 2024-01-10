@@ -27,8 +27,8 @@ RUN poetry config virtualenvs.create false \
 # copy project
 COPY . /usr/src/app/
 
-RUN chmod +x models_billing/entrypoint.sh
+#RUN chmod +x models_billing/entrypoint.sh
 
-ENTRYPOINT ["models_billing/entrypoint.sh"]
+#ENTRYPOINT ["models_billing/entrypoint.sh"]
 
 CMD ["sh", "-c", "uvicorn models_billing.main:app --host 0.0.0.0 --port $FASTAPI_PORT"]

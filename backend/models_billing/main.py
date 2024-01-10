@@ -5,7 +5,9 @@ from models_billing.core import security
 from . import models, schemas
 from .services import user_service, models_service
 from .core.database import SessionLocal, engine
+from models_billing.core.populate_db import populate_db
 
+populate_db(engine, SessionLocal)
 
 bearer = security.JWTBearer()
 
