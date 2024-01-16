@@ -42,6 +42,19 @@ def sign_in_user(sign_in_info: schemas.SignIn, db: Session = Depends(get_db)):
     return user_service.sign_in_user(db=db, sign_in_info=sign_in_info)
 
 
+@app.get("/my_user_info/", response_model=schemas.User)
+def get_user_info(token: str = Depends(bearer), db: Session = Depends(get_db)):
+    payload = security.decode_jwt(token)
+    user_id = payload.get('id')
+    return user_service.get_user(db=db, user_id=user_id)
+
+
+@app.get("/available_models/", response_model=list[schemas.MlModel])
+def get_available_models(token: str = Depends(bearer), db: Session = Depends(get_db)):
+    
+    return models_service.get_available_models(db=db)
+
+
 @app.post("/infer_model/", response_model=schemas.InferenceRequest)
 def infer_model(inference_request: schemas.InferenceRequestCreate, token: str = Depends(bearer), db: Session = Depends(get_db)):
     payload = security.decode_jwt(token)

@@ -22,6 +22,13 @@ redis_conn = Redis(host='redis', port=Configs.REDIS_PORT)
 # Создание объекта очереди
 queue = Queue(connection=redis_conn)
 
+
+def get_available_models(db: Session): #TODO: add check balance and models cost
+    stmt = select(models.MlModel)
+    models_info = db.scalars(stmt).all()
+    return models_info
+
+
 def create_inf_request(db: Session, user_id: int, inference_request_data: schemas.InferenceRequestCreate):
 
     user = db.scalars(select(models.User).filter(models.User.id == user_id)).first()

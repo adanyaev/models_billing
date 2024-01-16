@@ -20,7 +20,7 @@ container = dbc.Container(
         dbc.Row(
             html.Div(
                 [
-                    html.P("Email"),
+                    dbc.Label("Email"),
                     dbc.Input(id="email-input", type="text",),
                 ]
         )),
@@ -28,7 +28,7 @@ container = dbc.Container(
         dbc.Row(
             html.Div(
                 [
-                    html.P("Password"),
+                    dbc.Label("Password"),
                     dbc.Input(id="password-input", type="password",),
                 ]
         )),

@@ -8,6 +8,7 @@ app = Dash(__name__, suppress_callback_exceptions=False, external_stylesheets=[d
 app.layout = html.Div([
     dcc.Location(id='url', refresh=False),
     dcc.Store(id='token', storage_type='session'),
+    dcc.Store(id='user_data', storage_type='session'),
 
 
     html.Div(id='page-content')
