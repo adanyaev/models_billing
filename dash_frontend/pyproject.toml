@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "models-billing"
+name = "dash-frontend"
 version = "0.1.0"
 description = ""
 authors = ["Artem <ardan2076@mail.ru>"]
@@ -7,10 +7,8 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.11"
-fastapi = {extras = ["all"], version = "^0.104.1"}
-python-jose = {extras = ["cryptography"], version = "^3.3.0"}
-sqlalchemy = "^2.0.23"
-passlib = "^1.7.4"
+dash = "^2.14.2"
+dash-bootstrap-components = "^1.5.0"
 
 
 [build-system]

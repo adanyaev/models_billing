@@ -1,6 +1,7 @@
 from datetime import timedelta
 
 from sqlalchemy.orm import Session
+from sqlalchemy import select
 
 
 from models_billing.core import exceptions

@@ -1,23 +1,59 @@
 from pydantic import BaseModel
 from datetime import datetime
 
+
+# class MlModel(BaseModel):
+#     pass
+
+# class InferenceResult(BaseModel):
+#     pass
+
 class InferenceRequestBase(BaseModel):
-    pass
+
+    SEQN: float
+    RIAGENDR: float
+    PAQ605: float
+    BMXBMI: float
+    LBXGLU: float
+    DIQ010: float
+    LBXGLT: float
+    LBXIN: float
+    
 
 
 class InferenceRequestCreate(InferenceRequestBase):
-    pass
+    ml_model_id: int
+
 
 class InferenceRequestGet(InferenceRequestBase):
     pass
 
+class MlModel(BaseModel):
+    id: int
+    name: str
+    price: int
+    description: str
+
+    class Config:
+        orm_mode = True
+
+class InferenceResult(BaseModel):
+    id: int 
+
+    value: str
+
+    #inference_request: [InferenceRequest]
+
+    class Config:
+        orm_mode = True
+
 
 class InferenceRequest(InferenceRequestBase):
     id: int
-
     status: int
     cost: int
-    result: float | None
+    inference_result: InferenceResult | None
+    model : MlModel
 
     class Config:
         orm_mode = True
@@ -37,7 +73,7 @@ class User(UserBase):
     is_superuser: bool
     balance: int
 
-    inf_requests: list[InferenceRequest]
+    #inf_requests: list[InferenceRequest]
 
     class Config:
         orm_mode = True
