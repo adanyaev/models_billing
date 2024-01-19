@@ -283,15 +283,15 @@ app.layout = container
 )
 def fetch_user_info(n_clicks, token):
     res = requests.get(
-        "http://127.0.0.1:8080/my_user_info/",
+        "http://backend:8080/my_user_info/",
         headers={"Authorization": f"Bearer {token}"},
     )
     res_models = requests.get(
-        "http://127.0.0.1:8080/available_models/",
+        "http://backend:8080/available_models/",
         headers={"Authorization": f"Bearer {token}"},
     )
     res_requests = requests.get(
-        "http://127.0.0.1:8080/inf_requests/",
+        "http://backend:8080/inf_requests/",
         headers={"Authorization": f"Bearer {token}"},
     )
     if res.status_code == 200 and res_models.status_code == 200 and res_requests.status_code == 200:
@@ -381,7 +381,7 @@ def submit_request(
 ):
     if n_clicks and n_clicks > 0:
         res = requests.post(
-            "http://127.0.0.1:8080/infer_model/",
+            "http://backend:8080/infer_model/",
             headers={"Authorization": f"Bearer {token}"},
             json={
                 "ml_model_id": model_id,

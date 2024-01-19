@@ -71,8 +71,7 @@ def register(n_clicks, email, password, password_repeat):
     if n_clicks and n_clicks > 0:
         if password != password_repeat:
             return "Passwords do not match", True, ""
-        print(email)
-        res = requests.post("http://127.0.0.1:8080/sign_up/", json={
+        res = requests.post("http://backend:8080/sign_up/", json={
             "email": str(email),
             "password": str(password)
             })
@@ -86,3 +85,4 @@ def register(n_clicks, email, password, password_repeat):
 
 if __name__ == "__main__":
     app.run_server()
+    

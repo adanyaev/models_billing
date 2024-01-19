@@ -3,7 +3,7 @@ from dash_frontend import login, register, dashboard
 import dash_bootstrap_components as dbc
 
 
-app = Dash(__name__, suppress_callback_exceptions=False, external_stylesheets=[dbc.themes.BOOTSTRAP])
+app = Dash(__name__, suppress_callback_exceptions=True, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
 app.layout = html.Div([
     dcc.Location(id='url', refresh=False),
@@ -32,4 +32,4 @@ def display_page(pathname):
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port="8050", debug=False)

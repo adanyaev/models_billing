@@ -62,7 +62,7 @@ app.layout = container
 )
 def login(n_clicks, email, password):
     if n_clicks and n_clicks > 0:
-        res = requests.post("http://127.0.0.1:8080/sign_in/", json={
+        res = requests.post("http://backend:8080/sign_in/", json={
             "email": str(email),
             "password": str(password)
             })
