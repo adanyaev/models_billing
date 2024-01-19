@@ -51,8 +51,9 @@ def get_user_info(token: str = Depends(bearer), db: Session = Depends(get_db)):
 
 @app.get("/available_models/", response_model=list[schemas.MlModel])
 def get_available_models(token: str = Depends(bearer), db: Session = Depends(get_db)):
-    
-    return models_service.get_available_models(db=db)
+    payload = security.decode_jwt(token)
+    user_id = payload.get('id')
+    return models_service.get_available_models(db=db, user_id=user_id)
 
 
 @app.post("/infer_model/", response_model=schemas.InferenceRequest)
@@ -62,7 +63,7 @@ def infer_model(inference_request: schemas.InferenceRequestCreate, token: str = 
     return models_service.create_inf_request(db=db, user_id=user_id, inference_request_data=inference_request)
 
 
-@app.get("/get_inf_requests/", response_model=list[schemas.InferenceRequest])
+@app.get("/inf_requests/", response_model=list[schemas.InferenceRequest])
 def get_inf_requests(token: str = Depends(bearer), db: Session = Depends(get_db)):
     payload = security.decode_jwt(token)
     user_id = payload.get('id')
@@ -70,7 +71,7 @@ def get_inf_requests(token: str = Depends(bearer), db: Session = Depends(get_db)
     return models_service.get_inf_requests(db, user_id)
 
 
-@app.get("/get_inf_result/{request_id}", response_model=schemas.InferenceResult)
+@app.get("/inf_result/{request_id}", response_model=schemas.InferenceResult)
 def get_inf_result(request_id: int, token: str = Depends(bearer), db: Session = Depends(get_db)):
     payload = security.decode_jwt(token)
     user_id = payload.get('id')

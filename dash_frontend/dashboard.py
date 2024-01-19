@@ -174,6 +174,7 @@ create_request_modal = dbc.Modal(
                         n_clicks=0,
                     ),
                     html.Br(),
+                    html.Br(),
                     dbc.Alert(
                         "Hello! I am an alert",
                         id="create_request_alert",
@@ -232,6 +233,12 @@ container = dbc.Container(
                     ),
                     width="auto",
                 ),
+                dbc.Col(
+                    dbc.Button(
+                        "Update info", color="success", id="reload_butt", n_clicks=0
+                    ),
+                    width="auto",
+                ),
             ]
         ),
         dbc.Collapse(
@@ -244,6 +251,19 @@ container = dbc.Container(
             is_open=False,
         ),
         html.Br(),
+        html.H5("Inference requests"),
+        html.Br(),
+        dbc.Card(
+            dbc.ListGroup(
+                # [
+                #     dbc.ListGroupItem("Item 1"),
+                #     dbc.ListGroupItem("Item 2"),
+                #     dbc.ListGroupItem("Item 3"),
+                # ],
+                flush=True, id='requests_table'
+            ),
+            style={"width": "60rem"},
+        )
     ],
     id="main_container",
 )
@@ -257,9 +277,11 @@ app.layout = container
     Output(component_id="user_balance", component_property="children"),
     Output(component_id="models_info", component_property="children"),
     Output(component_id="select_model", component_property="options"),
-    Input(component_id="token", component_property="data"),
+    Output(component_id="requests_table", component_property="children"),
+    Input("reload_butt", "n_clicks"),
+    dash.dependencies.State(component_id="token", component_property="data"),
 )
-def fetch_user_info(token):
+def fetch_user_info(n_clicks, token):
     res = requests.get(
         "http://127.0.0.1:8080/my_user_info/",
         headers={"Authorization": f"Bearer {token}"},
@@ -268,9 +290,14 @@ def fetch_user_info(token):
         "http://127.0.0.1:8080/available_models/",
         headers={"Authorization": f"Bearer {token}"},
     )
-    if res.status_code == 200 and res_models.status_code == 200:
+    res_requests = requests.get(
+        "http://127.0.0.1:8080/inf_requests/",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    if res.status_code == 200 and res_models.status_code == 200 and res_requests.status_code == 200:
         user_data = res.json()
         models_data = res_models.json()
+        requests_data = res_requests.json()
         models_description = ""
         select_options = []
         for model in models_data:
@@ -285,12 +312,33 @@ def fetch_user_info(token):
             )
             models_description += "\n\n"
 
+        list_items = []
+        for request in requests_data:
+
+            table_header = [
+                html.Thead(html.Tr([html.Th("SEQN"), html.Th("RIAGENDR"), html.Th("PAQ605"), html.Th("BMXBMI"),
+                                    html.Th("LBXGLU"), html.Th("DIQ010") ,html.Th("LBXGLT"), html.Th("LBXIN")]))
+            ]
+            row1 = html.Tr([html.Td(request['SEQN']), html.Td(request['RIAGENDR']), html.Td(request['PAQ605']), html.Td(request['BMXBMI']),
+                            html.Td(request['LBXGLU']), html.Td(request['DIQ010']), html.Td(request['LBXGLT']), html.Td(request['LBXIN'])])
+            table_body = [html.Tbody([row1])]
+            table = dbc.Table(table_header + table_body, bordered=True)
+
+            item = dbc.ListGroupItem([html.H5(f"Model name: {request['model']['name']}"),
+                                      html.P(f"Request price: {request['cost']}"),
+                                      table,
+                                      html.P(f"Result: {request['inference_result']['value']}")
+                                      ])
+            list_items.append(item)
+        
+            
         return (
             user_data,
             f"Hello, {user_data['email']}",
             str(user_data["balance"]),
             models_description,
             select_options,
+            list_items
         )
 
     return
@@ -298,12 +346,14 @@ def fetch_user_info(token):
 
 @callback(
     Output("modal", "is_open", allow_duplicate=True),
+    Output("reload_butt", "n_clicks"),
     Output(component_id="create_request_alert", component_property="children"),
     Output(component_id="create_request_alert", component_property="is_open"),
     Input("submit_request_butt", "n_clicks"),
-    [
+    [   
         dash.dependencies.State("token", "data"),
         dash.dependencies.State("select_model", "value"),
+        dash.dependencies.State("reload_butt", "n_clicks"),
         dash.dependencies.State("SEQN", "value"),
         dash.dependencies.State("RIAGENDR", "value"),
         dash.dependencies.State("PAQ605", "value"),
@@ -319,6 +369,7 @@ def submit_request(
     n_clicks,
     token,
     model_id,
+    reload_n_clicks,
     SEQN,
     RIAGENDR,
     PAQ605,
@@ -346,9 +397,9 @@ def submit_request(
         )
         if res.status_code == 200:
             response = res.json()
-            return False, "", False
+            return False, reload_n_clicks+1, "", False
 
-        return True, res.json()["detail"], True
+        return True, reload_n_clicks, res.json()["detail"], True
 
     else:
         raise dash.exceptions.PreventUpdate

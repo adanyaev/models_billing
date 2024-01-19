@@ -37,24 +37,23 @@ class MlModel(BaseModel):
     class Config:
         orm_mode = True
 
-
-class InferenceRequest(InferenceRequestBase):
-    id: int
-    status: int
-    cost: int
-    # result: InferenceResult | None
-    model : MlModel
-
-    class Config:
-        orm_mode = True
-
-
 class InferenceResult(BaseModel):
     id: int 
 
     value: str
 
     #inference_request: [InferenceRequest]
+
+    class Config:
+        orm_mode = True
+
+
+class InferenceRequest(InferenceRequestBase):
+    id: int
+    status: int
+    cost: int
+    inference_result: InferenceResult | None
+    model : MlModel
 
     class Config:
         orm_mode = True
